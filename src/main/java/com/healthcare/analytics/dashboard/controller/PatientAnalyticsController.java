@@ -25,7 +25,7 @@ public class PatientAnalyticsController {
 
     @GetMapping("/{patientId}")
     public ResponseEntity<PatientAnalyticsDto> getPatientById(@PathVariable Long patientId) {
-        PatientAnalyticsDto patient = patientAnalyticsService.getPatientAnalytics(patientId);
+        PatientAnalyticsDto patient = patientAnalyticsService.getPatientAnalyticsByID(patientId);
         return ResponseEntity.ok(patient);
     }
 
