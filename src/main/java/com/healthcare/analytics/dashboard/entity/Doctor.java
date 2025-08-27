@@ -59,11 +59,13 @@ public class Doctor {
     // Constructors
     public Doctor() {}
 
-    public Doctor(String firstName, String lastName, String licenseNumber, String specialization) {
+    public Doctor(String firstName, String lastName, String licenseNumber, String specialization, LocalDateTime createdAt, LocalDateTime updatedAt) {
         this.firstName = firstName;
         this.lastName = lastName;
         this.licenseNumber = licenseNumber;
         this.specialization = specialization;
+        this.createdAt = createdAt;
+        this.updatedAt = updatedAt;
     }
 
     // Getters and Setters

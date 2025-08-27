@@ -96,6 +96,44 @@ public class PatientCohortService {
         throw new RuntimeException("Cohort not found with ID: " + cohortId);
     }
 
+    public CohortDto updateCohort(Long cohortId, CohortDto cohortDto) {
+        Optional<PatientCohort> cohortOpt = patientCohortRepository.findById(cohortId);
+        if (cohortOpt.isPresent()) {
+            PatientCohort cohort = cohortOpt.get();
+            cohort.setName(cohortDto.getName());
+            cohort.setDescription(cohortDto.getDescription());
+
+            // Update criteria
+            cohort.getCriteria().clear();
+            if (cohortDto.getCriteria() != null) {
+                PatientCohort finalCohort = cohort;
+                List<CohortCriteria> criteria = cohortDto.getCriteria().stream()
+                        .map(dto -> mapCohortCriteriaDTOToCohortCriteria(dto, finalCohort))
+                        .collect(Collectors.toList());
+                cohort.setCriteria(criteria);
+            }
+
+            // Re-apply criteria to find matching patients
+            List<Patient> matchingPatients = findPatientsMatchingCriteria(cohort.getCriteria());
+            cohort.setPatients(matchingPatients);
+
+            cohort = patientCohortRepository.save(cohort);
+            return mapPatientCohortToCohortDTO(cohort);
+        }
+        throw new RuntimeException("Cohort not found with ID: " + cohortId);
+    }
+
+    public void deleteCohort(Long cohortId) {
+        Optional<PatientCohort> cohortOpt = patientCohortRepository.findById(cohortId);
+        if (cohortOpt.isPresent()) {
+            PatientCohort cohort = cohortOpt.get();
+            cohort.setIsActive(false);
+            patientCohortRepository.save(cohort);
+        } else {
+            throw new RuntimeException("Cohort not found with ID: " + cohortId);
+        }
+    }
+
     private List<Patient> findPatientsMatchingCriteria(List<CohortCriteria> criteria) {
         if (criteria == null || criteria.isEmpty()) {
             return patientRepository.findAll();

@@ -56,16 +56,16 @@ public class DataInitializationService implements CommandLineRunner {
 
     private List<Doctor> createSampleDoctors() {
         return Arrays.asList(
-                new Doctor("John", "Smith", "MD001", "Cardiology"),
-                new Doctor("Sarah", "Johnson", "MD002", "Pediatrics"),
-                new Doctor("Michael", "Brown", "MD003", "Orthopedics"),
-                new Doctor("Emily", "Davis", "MD004", "Dermatology"),
-                new Doctor("Robert", "Wilson", "MD005", "Internal Medicine"),
-                new Doctor("Lisa", "Anderson", "MD006", "Neurology"),
-                new Doctor("David", "Taylor", "MD007", "Emergency Medicine"),
-                new Doctor("Jennifer", "Thomas", "MD008", "Oncology"),
-                new Doctor("James", "Jackson", "MD009", "Psychiatry"),
-                new Doctor("Amanda", "White", "MD010", "Radiology")
+                new Doctor("John", "Smith", "MD001", "Cardiology",LocalDateTime.now(),LocalDateTime.now()),
+                new Doctor("Sarah", "Johnson", "MD002", "Pediatrics",LocalDateTime.now(),LocalDateTime.now()),
+                new Doctor("Michael", "Brown", "MD003", "Orthopedics",LocalDateTime.now(),LocalDateTime.now()),
+                new Doctor("Emily", "Davis", "MD004", "Dermatology",LocalDateTime.now(),LocalDateTime.now()),
+                new Doctor("Robert", "Wilson", "MD005", "Internal Medicine",LocalDateTime.now(),LocalDateTime.now()),
+                new Doctor("Lisa", "Anderson", "MD006", "Neurology",LocalDateTime.now(),LocalDateTime.now()),
+                new Doctor("David", "Taylor", "MD007", "Emergency Medicine",LocalDateTime.now(),LocalDateTime.now()),
+                new Doctor("Jennifer", "Thomas", "MD008", "Oncology",LocalDateTime.now(),LocalDateTime.now()),
+                new Doctor("James", "Jackson", "MD009", "Psychiatry",LocalDateTime.now(),LocalDateTime.now()),
+                new Doctor("Amanda", "White", "MD010", "Radiology",LocalDateTime.now(),LocalDateTime.now())
         );
     }
 
@@ -90,6 +90,8 @@ public class DataInitializationService implements CommandLineRunner {
             patient.setAddress(String.format("%d Main St, City %d", random.nextInt(9999) + 1, random.nextInt(100) + 1));
             patient.setInsuranceProvider(insuranceProviders[random.nextInt(insuranceProviders.length)]);
             patient.setInsurancePolicyNumber(String.format("POL%08d", random.nextInt(100000000)));
+            patient.setCreatedAt(LocalDateTime.now());
+            patient.setUpdatedAt(LocalDateTime.now());
             patients.add(patient);
         }
 
@@ -117,6 +119,8 @@ public class DataInitializationService implements CommandLineRunner {
                 visit.setReasonForVisit("Regular checkup and treatment");
                 visit.setNotes("Patient examined, vitals stable");
                 visit.setTotalCost(BigDecimal.valueOf(random.nextDouble() * 500 + 50));
+                visit.setCreatedAt(LocalDateTime.now());
+                visit.setUpdatedAt(LocalDateTime.now());
 
                 visit = visitRepository.save(visit);
 
@@ -131,6 +135,8 @@ public class DataInitializationService implements CommandLineRunner {
                     diagnosis.setDescription("Clinical diagnosis based on examination");
                     diagnosis.setDiagnosisType(Diagnosis.DiagnosisType.values()[random.nextInt(Diagnosis.DiagnosisType.values().length)]);
                     diagnosis.setSeverity(Diagnosis.Severity.values()[random.nextInt(Diagnosis.Severity.values().length)]);
+                    diagnosis.setCreatedAt(LocalDateTime.now());
+                    diagnosis.setUpdatedAt(LocalDateTime.now());
                     diagnosisRepository.save(diagnosis);
                 }
 
@@ -147,6 +153,8 @@ public class DataInitializationService implements CommandLineRunner {
                     prescription.setQuantity(30);
                     prescription.setInstructions("Take with food");
                     prescription.setStatus(Prescription.PrescriptionStatus.ACTIVE);
+                    prescription.setCreatedAt(LocalDateTime.now());
+                    prescription.setUpdatedAt(LocalDateTime.now());
                     prescriptionRepository.save(prescription);
                 }
             }

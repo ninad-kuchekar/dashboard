@@ -31,9 +31,9 @@ public class PatientAnalyticsController {
 
     @GetMapping("/search")
     public ResponseEntity<Page<PatientAnalyticsDto>> searchPatients(
-            @RequestParam String q,
+            @RequestParam String searchTerm,
             @PageableDefault(size = 20) Pageable pageable) {
-        Page<PatientAnalyticsDto> patients = patientAnalyticsService.searchPatients(q, pageable);
+        Page<PatientAnalyticsDto> patients = patientAnalyticsService.searchPatients(searchTerm, pageable);
         return ResponseEntity.ok(patients);
     }
 }
