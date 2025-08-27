@@ -3,6 +3,7 @@ package com.healthcare.analytics.dashboard.service;
 import com.healthcare.analytics.dashboard.dto.PatientAnalyticsDto;
 import com.healthcare.analytics.dashboard.entity.Patient;
 import com.healthcare.analytics.dashboard.repository.PatientRepository;
+import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -29,7 +30,7 @@ public class PatientAnalyticsService {
         Optional<Patient> patient = patientRepository.findById(patientId);
         if(patient.isPresent())
             return mapPatientToPatientAnalyticsDTO(patient.get());
-        throw new RuntimeException("Patient with ID " +patientId+ " is not found.");
+        throw new EntityNotFoundException("Patient with ID " +patientId+ " is not found.");
     }
 
     /**
