@@ -2,6 +2,7 @@ package com.healthcare.analytics.dashboard.service;
 
 import com.healthcare.analytics.dashboard.dto.CohortCriteriaDto;
 import com.healthcare.analytics.dashboard.dto.CohortDto;
+import com.healthcare.analytics.dashboard.dto.PatientAnalyticsDto;
 import com.healthcare.analytics.dashboard.entity.CohortCriteria;
 import com.healthcare.analytics.dashboard.entity.Patient;
 import com.healthcare.analytics.dashboard.entity.PatientCohort;
@@ -14,13 +15,15 @@ import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
-
+@Service
 public class PatientCohortService {
 
     @Autowired
@@ -31,6 +34,9 @@ public class PatientCohortService {
 
     @Autowired
     private EntityManager entityManager;
+
+    @Autowired
+    private PatientAnalyticsService patientAnalyticsService;
 
 
     public CohortDto createCohort(@Valid CohortDto cohortDto) {
@@ -62,13 +68,32 @@ public class PatientCohortService {
     }
 
     public List<CohortDto> getAllCohorts() {
+        List<PatientCohort> cohorts = patientCohortRepository.findActiveCohortsOrderByUpdatedDesc();
+        return cohorts.stream().map(this::mapPatientCohortToCohortDTO).collect(Collectors.toList());
 
-        return null;
     }
 
-    public Page<CohortDto> searchCohorts(String q, Pageable pageable) {
+    public Page<CohortDto> searchCohorts(String searchTerm, Pageable pageable) {
+        Page<PatientCohort> cohorts = patientCohortRepository.findByNameContainingIgnoreCase(searchTerm, pageable);
+        return cohorts.map(this::mapPatientCohortToCohortDTO);
+    }
 
-        return null;
+    public CohortDto getCohortById(Long cohortId) {
+        Optional<PatientCohort> cohortOpt = patientCohortRepository.findById(cohortId);
+        if (cohortOpt.isPresent()) {
+            return mapPatientCohortToCohortDTO(cohortOpt.get());
+        }
+        throw new RuntimeException("Cohort not found with ID: " + cohortId);
+    }
+
+    public List<PatientAnalyticsDto> getCohortPatients(Long cohortId) {
+        Optional<PatientCohort> cohortOpt = patientCohortRepository.findById(cohortId);
+        if (cohortOpt.isPresent()) {
+            return cohortOpt.get().getPatients().stream()
+                    .map(patient -> patientAnalyticsService.getPatientAnalytics(patient.getId()))
+                    .collect(Collectors.toList());
+        }
+        throw new RuntimeException("Cohort not found with ID: " + cohortId);
     }
 
     private List<Patient> findPatientsMatchingCriteria(List<CohortCriteria> criteria) {
